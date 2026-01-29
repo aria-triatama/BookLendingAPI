@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -34,16 +35,27 @@ public class BookController {
         return bookRepository.save(book);
     }
 
-    @PutMapping("/update")
-    public Book updateBook(@RequestBody Book book) {
-        if (book.getId() == null) {
-            throw new IllegalArgumentException("Book ID must not be null for update");
-        }
-        return bookRepository.save(book);
+    @PutMapping("/update/{id}")
+    public Book updateBook(@PathVariable UUID id, @RequestBody Book book) {
+        Book existingBook = bookRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Book not found"));
+        existingBook.setTitle(book.getTitle());
+        existingBook.setAuthor(book.getAuthor());
+        existingBook.setIsbn(book.getIsbn());
+        existingBook.setTotalCopies(book.getTotalCopies());
+        existingBook.setAvailableCopies(book.getAvailableCopies());
+        return bookRepository.save(existingBook);
     }
 
-    @DeleteMapping("/delete")
-    public void deleteBook(@RequestParam UUID id) {
+    @GetMapping("/{id}")
+    public Book getBookById(@PathVariable UUID id) {
+        return bookRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Book not found"));
+    }
+
+
+    @DeleteMapping("/delete/{id}")
+    public void deleteBook(@PathVariable UUID id) {
         bookRepository.deleteById(id);
     }
 }

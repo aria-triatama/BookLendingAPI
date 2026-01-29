@@ -82,7 +82,7 @@ public class BookControllerTest {
     void updateBook_shouldReturnUpdatedBook() throws Exception {
         when(bookRepository.save(any(Book.class))).thenReturn(sampleBook);
 
-        mockMvc.perform(put("/books/update")
+        mockMvc.perform(put("/books/update/{id}", bookId)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(sampleBook)))
                 .andExpect(status().isOk())
@@ -95,8 +95,7 @@ public class BookControllerTest {
     void deleteBook_shouldReturnOk() throws Exception {
         doNothing().when(bookRepository).deleteById(bookId);
 
-        mockMvc.perform(delete("/books/delete")
-                .param("id", bookId.toString()))
+        mockMvc.perform(delete("/books/delete/{id}", bookId))
                 .andExpect(status().isOk());
 
         verify(bookRepository, times(1)).deleteById(bookId);
@@ -109,7 +108,7 @@ public class BookControllerTest {
                 .author("Author")
                 .build();
 
-        mockMvc.perform(put("/books/update")
+        mockMvc.perform(put("/books/update/{id}", bookId)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(bookWithoutId)))
                 .andExpect(status().isInternalServerError());

@@ -14,6 +14,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.Arrays;
+import java.util.Optional;
 import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -77,6 +78,7 @@ public class MemberControllerTest {
 
     @Test
     void updateMember_shouldReturnUpdatedMember() throws Exception {
+        when(memberRepository.findById(memberId)).thenReturn(Optional.of(sampleMember));
         when(memberRepository.save(any(Member.class))).thenReturn(sampleMember);
 
         mockMvc.perform(put("/members/update/{id}", memberId)
@@ -108,6 +110,6 @@ public class MemberControllerTest {
         mockMvc.perform(put("/members/update/{id}", memberId)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(memberWithoutId)))
-                .andExpect(status().isInternalServerError());
+                .andExpect(status().isNotFound());
     }
 }

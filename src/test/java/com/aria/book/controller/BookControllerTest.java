@@ -14,6 +14,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.Arrays;
+import java.util.Optional;
 import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -80,6 +81,7 @@ public class BookControllerTest {
 
     @Test
     void updateBook_shouldReturnUpdatedBook() throws Exception {
+        when(bookRepository.findById(bookId)).thenReturn(Optional.of(sampleBook));
         when(bookRepository.save(any(Book.class))).thenReturn(sampleBook);
 
         mockMvc.perform(put("/books/update/{id}", bookId)
@@ -111,6 +113,6 @@ public class BookControllerTest {
         mockMvc.perform(put("/books/update/{id}", bookId)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(bookWithoutId)))
-                .andExpect(status().isInternalServerError());
+                .andExpect(status().isNotFound());
     }
 }
